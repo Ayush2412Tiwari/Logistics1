@@ -17,7 +17,7 @@ const connectDB = async () => {
 };
 
 // change this to a valid user ID from your DB
-const USER_ID = "69c718169fe485720f23a6b0";
+const USER_ID = "69c7dc1655a8e1b89e2a094d";
 
 const products = [
   {
