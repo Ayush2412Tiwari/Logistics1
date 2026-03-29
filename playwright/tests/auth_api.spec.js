@@ -1,108 +1,64 @@
 const { test, expect } = require('@playwright/test');
+const {
+  mockLogin,
+  mockGetMe,
+  mockRegister,
+  mockLogout
+} = require('./MockAPIS/auth_api');
 
-test('Login - success (stable)', async ({ page }) => {
 
-  //Mock LOGIN API
-  await page.route('**/api/auth/login', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        user: {
-          _id: '69c7dc1655a8e1b89e2a094d',
-          name: 'Ayush',
-          email: 'ayushdec24@gmail.com'
-        }
-      }),
-    });
-  });
+// ✅ LOGIN TEST
+test('Login - success', async ({ page }) => {
 
-  //Open app
+  await mockLogin(page);
+
   await page.goto('http://localhost:5173');
 
-  //Fill login form
   await page.fill('#login-email', 'ayushdec24@gmail.com');
   await page.fill('#login-password', '12345678');
-  await page.click("#login-submit-btn")
+  await page.click('#login-submit-btn');
 
-  // Login button should disappear after login
   await expect(page.locator('#login-submit-btn')).not.toBeVisible();
-
-  await page.waitForTimeout(3000)
 });
 
-test('Get me',async({page})=>{
-    await page.route('**/api/auth/me', async (route) => {
-  await route.fulfill({
-    status: 200,
-    contentType: 'application/json',
-    body: JSON.stringify({
-      success: true,
-      user: {
-        _id: "69c7dc1655a8e1b89e2a094d",
-        name: "Ayush",
-        email: "ayushdec24@gmail.com",
-        createdAt: "2026-03-28T13:48:06.757Z"
-      }
-    }),
-  });
-});
 
-  //Open app
+// ✅ GET ME TEST
+test('Get me', async ({ page }) => {
+
+  await mockGetMe(page);
+
   await page.goto('http://localhost:5173');
 
-  // Login button should disappear after login
   await expect(page.locator('#login-submit-btn')).not.toBeVisible();
-
-})
-
-test('Register User',async({page})=>{
-
-    await page.route('**/api/auth/register', async (route) => {
-    await route.fulfill({
-      status: 400,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        "name": "Ayush",
-        "email": "ayushdec24@gmail.com",
-        "password": "12345678"
-    }),
-    });
-  });
-  await page.goto("http://localhost:5173/login")
-  await page.click("//button[text()='Sign Up']")
-  await page.fill("#login-name",'Ayush')
-  await page.fill("#login-email","ayushdec24@gmail.com")
-  await page.fill("#login-password","12345678")
-
-  await page.click("#login-submit-btn")
+});
 
 
-})
+// ✅ REGISTER TEST
+test('Register User', async ({ page }) => {
 
+  await mockRegister(page);
+
+  await page.goto('http://localhost:5173/login');
+
+  await page.click("//button[text()='Sign Up']");
+  await page.fill('#login-name', 'Ayush');
+  await page.fill('#login-email', 'ayushdec24@gmail.com');
+  await page.fill('#login-password', '12345678');
+
+  await page.click('#login-submit-btn');
+});
+
+
+// ✅ LOGOUT TEST
 test('Access Logout', async ({ page }) => {
-  await page.route("**/api/auth/logout",async(route)=>{
-    await route.fulfill({
-      status:200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        message: 'Logged out successfully',
-        })
-    })
-  })
-  
 
+  await mockLogout(page);
 
-  await page.goto('http://localhost:5173/');
-  await page.fill("#login-email","ayushdec24@gmail.com")
-  await page.fill("#login-password","12345678")
-  await page.click("#login-submit-btn")
+  await page.goto('http://localhost:5173');
 
-  await page.click("//span[text()='Logout'] ")
+  await page.fill('#login-email', 'ayushdec24@gmail.com');
+  await page.fill('#login-password', '12345678');
+  await page.click('#login-submit-btn');
 
-  await page.waitForTimeout(3000)
-
-  //await expect(page.locator('text=Product 1')).toBeVisible();
+  await page.click("//span[text()='Logout']");
 });
