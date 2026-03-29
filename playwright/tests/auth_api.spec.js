@@ -55,7 +55,6 @@ test('Get me',async({page})=>{
   // Login button should disappear after login
   await expect(page.locator('#login-submit-btn')).not.toBeVisible();
 
-  await page.pause()
 })
 
 test('Register User',async({page})=>{
@@ -81,3 +80,29 @@ test('Register User',async({page})=>{
 
 
 })
+
+test('Access Logout', async ({ page }) => {
+  await page.route("**/api/auth/logout",async(route)=>{
+    await route.fulfill({
+      status:200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        message: 'Logged out successfully',
+        })
+    })
+  })
+  
+
+
+  await page.goto('http://localhost:5173/');
+  await page.fill("#login-email","ayushdec24@gmail.com")
+  await page.fill("#login-password","12345678")
+  await page.click("#login-submit-btn")
+
+  await page.click("//span[text()='Logout'] ")
+
+  await page.waitForTimeout(3000)
+
+  //await expect(page.locator('text=Product 1')).toBeVisible();
+});
