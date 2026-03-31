@@ -1,20 +1,29 @@
 // tests/MockAPIS/auth_api.js
 
 // ✅ Login Mock
-async function mockLogin(page) {
-  await page.route('**/api/auth/login', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        success: true,
-        user: {
-          _id: '69c7dc1655a8e1b89e2a094d',
-          name: 'Ayush',
-          email: 'ayushdec24@gmail.com'
-        }
-      }),
-    });
+async function mockLogin(page, statusCode) {
+  await page.route('**/api/login', async (route) => {
+
+    if (statusCode === 200) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: true,
+          token: "fake-token"
+        })
+      });
+    } else {
+      await route.fulfill({
+        status: 401,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          success: false,
+          message: "Invalid credentials"
+        })
+      });
+    }
+
   });
 }
 

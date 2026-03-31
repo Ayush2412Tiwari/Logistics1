@@ -8,19 +8,31 @@ const {
   mockLogout
 } = require('./MockAPIS/auth_api');
 
+const { getLoginData } = require('../testDataUtils/excelReader');
 
-// ✅ LOGIN TEST
-test('Login - success', async ({ page }) => {
+const loginData = getLoginData();
 
-  const auth = new AuthPage(page);
 
-  await mockLogin(page);
-  await auth.gotoHome();
+// ✅ LOGIN TEST (DATA DRIVEN)
+for (const [index, data] of loginData.entries()) {
 
-  await auth.login('ayushdec24@gmail.com', '12345678');
+  test(`Login Test - ${data.Username} - ${index}`, async ({ page }) => {
 
-  await expect(auth.loginBtn).not.toBeVisible();
-});
+    const auth = new AuthPage(page);
+
+    await mockLogin(page, data.Status);
+
+    await auth.gotoHome();
+    await auth.login(data.Email, data.Password);
+
+    if (data.Status === 200) {
+      await expect(auth.loginBtn).not.toBeVisible();
+    } else {
+      await expect(auth.loginBtn).toBeVisible();
+    }
+  });
+
+}
 
 
 // ✅ GET ME TEST
@@ -56,6 +68,5 @@ test('Access Logout', async ({ page }) => {
   await auth.gotoHome();
 
   await auth.login('ayushdec24@gmail.com', '12345678');
-
   await auth.logout();
 });

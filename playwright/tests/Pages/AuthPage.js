@@ -21,7 +21,7 @@ class AuthPage {
 
   async login(email, password) {
     await this.emailInput.fill(email);
-    await this.passwordInput.fill(password);
+    await this.passwordInput.fill(String(password));
     await this.loginBtn.click();
   }
 
