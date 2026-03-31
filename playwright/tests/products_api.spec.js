@@ -1,4 +1,6 @@
 const { test, expect } = require('@playwright/test');
+const { ProductPage } = require('./Pages/ProductPage');
+
 const {
   mockGetProducts,
   mockCreateProduct,
@@ -10,61 +12,55 @@ const {
 // ✅ GET PRODUCTS
 test('Access all products', async ({ page }) => {
 
+  const product = new ProductPage(page);
+
   await mockGetProducts(page);
 
-  await page.goto('http://localhost:5173/');
-  await page.fill("#login-email","ayushdec24@gmail.com");
-  await page.fill("#login-password","12345678");
-  await page.click("#login-submit-btn");
+  await product.gotoHome();
+  await product.login('ayushdec24@gmail.com', '12345678');
 
-  await page.fill("//input[@placeholder='Filter inventory...']", "phone");
+  await product.filterProduct('phone');
 });
 
 
-// ✅ CREATE
+// ✅ CREATE PRODUCT
 test('Create Product', async ({ page }) => {
+
+  const product = new ProductPage(page);
 
   await mockCreateProduct(page);
 
-  await page.goto('http://localhost:5173/');
-  await page.fill("#login-email","ayushdec24@gmail.com");
-  await page.fill("#login-password","12345678");
-  await page.click("#login-submit-btn");
+  await product.gotoHome();
+  await product.login('ayushdec24@gmail.com', '12345678');
 
-  await page.click("//button[contains(text(),'Add Product')]");
-
-  await page.fill("//input[@placeholder='e.g. Cisco C9200L Router']", "Dell Laptop");
-  await page.locator("//select[@name]").selectOption("Electronics");
-  await page.fill("//input[@name='price']", "20000");
-  await page.click("//button[contains(text(),'Create')]");
+  await product.openAddProduct();
+  await product.createProduct('Dell Laptop', 'Electronics', '20000');
 });
 
 
-// ✅ UPDATE
+// ✅ UPDATE PRODUCT
 test('Update Product', async ({ page }) => {
+
+  const product = new ProductPage(page);
 
   await mockUpdateProduct(page);
 
-  await page.goto('http://localhost:5173/');
-  await page.fill("#login-email","ayushdec24@gmail.com");
-  await page.fill("#login-password","12345678");
-  await page.click("#login-submit-btn");
+  await product.gotoHome();
+  await product.login('ayushdec24@gmail.com', '12345678');
 
-  await page.click("(//button)[9]");
-  await page.click("//button[text()='Save Changes']");
+  await product.updateProduct();
 });
 
 
-// ✅ DELETE
+// ✅ DELETE PRODUCT
 test('Delete Product', async ({ page }) => {
+
+  const product = new ProductPage(page);
 
   await mockDeleteProduct(page);
 
-  await page.goto('http://localhost:5173/');
-  await page.fill("#login-email","ayushdec24@gmail.com");
-  await page.fill("#login-password","12345678");
-  await page.click("#login-submit-btn");
+  await product.gotoHome();
+  await product.login('ayushdec24@gmail.com', '12345678');
 
-  await page.click("(//button)[10]");
-  await page.click("//button[@id='confirm-modal-delete-btn']");
+  await product.deleteProduct();
 });

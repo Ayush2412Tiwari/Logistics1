@@ -1,4 +1,6 @@
 const { test, expect } = require('@playwright/test');
+const { AuthPage } = require('./Pages/AuthPage');
+
 const {
   mockLogin,
   mockGetMe,
@@ -10,55 +12,50 @@ const {
 // ✅ LOGIN TEST
 test('Login - success', async ({ page }) => {
 
+  const auth = new AuthPage(page);
+
   await mockLogin(page);
+  await auth.gotoHome();
 
-  await page.goto('http://localhost:5173');
+  await auth.login('ayushdec24@gmail.com', '12345678');
 
-  await page.fill('#login-email', 'ayushdec24@gmail.com');
-  await page.fill('#login-password', '12345678');
-  await page.click('#login-submit-btn');
-
-  await expect(page.locator('#login-submit-btn')).not.toBeVisible();
+  await expect(auth.loginBtn).not.toBeVisible();
 });
 
 
 // ✅ GET ME TEST
 test('Get me', async ({ page }) => {
 
+  const auth = new AuthPage(page);
+
   await mockGetMe(page);
+  await auth.gotoHome();
 
-  await page.goto('http://localhost:5173');
-
-  await expect(page.locator('#login-submit-btn')).not.toBeVisible();
+  await expect(auth.loginBtn).not.toBeVisible();
 });
 
 
 // ✅ REGISTER TEST
 test('Register User', async ({ page }) => {
 
+  const auth = new AuthPage(page);
+
   await mockRegister(page);
+  await auth.gotoLogin();
 
-  await page.goto('http://localhost:5173/login');
-
-  await page.click("//button[text()='Sign Up']");
-  await page.fill('#login-name', 'Ayush');
-  await page.fill('#login-email', 'ayushdec24@gmail.com');
-  await page.fill('#login-password', '12345678');
-
-  await page.click('#login-submit-btn');
+  await auth.register('Ayush', 'ayushdec24@gmail.com', '12345678');
 });
 
 
 // ✅ LOGOUT TEST
 test('Access Logout', async ({ page }) => {
 
+  const auth = new AuthPage(page);
+
   await mockLogout(page);
+  await auth.gotoHome();
 
-  await page.goto('http://localhost:5173');
+  await auth.login('ayushdec24@gmail.com', '12345678');
 
-  await page.fill('#login-email', 'ayushdec24@gmail.com');
-  await page.fill('#login-password', '12345678');
-  await page.click('#login-submit-btn');
-
-  await page.click("//span[text()='Logout']");
+  await auth.logout();
 });
